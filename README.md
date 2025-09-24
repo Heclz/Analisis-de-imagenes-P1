@@ -1,168 +1,97 @@
-PRACTICA 1 — Análisis de Imágenes con Python (Equipo Supernovas)
+# Extensión – Práctica 1: Histograma y Propiedades (Color y Escala de Grises)
 
-Objetivo. Aplicar conceptos fundamentales del análisis de imágenes digitales mediante el desarrollo colaborativo de scripts en Python para leer, transformar y analizar imágenes, relacionando los modelos de color con el procesamiento básico. 
+Este proyecto calcula **histogramas** y **propiedades estadísticas** (energía, entropía, asimetría, media, varianza) para:
+- **Imagen en escala de grises**
+- **Imagen en color (RGB)** — por canal (Rojo, Verde, Azul)
 
-Practica 1-Analisis de Imágenes
+Además incluye **extensiones** útiles para el desarrollo posterior:
+- Histograma **acumulado** y **normalizado**
+- **Kurtosis** (opcional, para mayor análisis)
+- **Ecualización** de histograma (grises y aproximación en color)
+- Exportación a **CSV/JSON** de resultados
+- Guardado de gráficas (PNG) y resultados
 
-Alcance y productos por sesión
+> Sugerencia: coloca tus imágenes dentro de la carpeta `imgs/` y usa rutas como `imgs/mi_imagen.jpg`.
 
-Sesión 1 (90 min): lectura de imágenes, separación RGB, breve repaso de modelos de color; producto: script que lee y separa RGB + bitácora. 
+---
 
-Practica 1-Analisis de Imágenes
+## 1) Requisitos
 
- 
+Python 3.9+ recomendado. Instala dependencias con:
 
-Practica 1-Analisis de Imágenes
-
-Sesión 2 (90 min): grises, binarización (umbral fijo y Otsu) y histograma de intensidad; producto: script que escale a grises y binarice + comparación de resultados. 
-
-Practica 1-Analisis de Imágenes
-
- 
-
-Practica 1-Analisis de Imágenes
-
-Sesión 3 (90 min): presentación y reflexión; productos: informe técnico y repositorio en GitHub con código y documentación. 
-
-Practica 1-Analisis de Imágenes
-
-Rúbrica (criterios de evaluación)
-
-Funcionalidad del código, aplicación de modelos de color, transformaciones (grises/binarización), trabajo colaborativo, presentación y documentación, y reflexión/mejora autónoma. Usa esta lista como checklist al cerrar issues/PRs. 
-
-Practica 1-Analisis de Imágenes
-
- 
-
-Practica 1-Analisis de Imágenes
-
- 
-
-Practica 1-Analisis de Imágenes
-
-Requisitos
-
-Python 3.x instalado. 
-
-Guia_Laboratorio_Analisis_Image…
-
-Librerías: pillow, opencv-python, numpy, matplotlib. 
-
-Guia_Laboratorio_Analisis_Image…
-
-Se recomienda entorno virtual para evitar conflictos de versiones. 
-
-Practica 1-Analisis de Imágenes
-
-Instalación rápida
-
-Windows (PowerShell)
-
+```bash
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-
-
-macOS / Linux
-
-python3 -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
 source .venv/bin/activate
+
 pip install -r requirements.txt
+```
 
+---
 
-Si no usas requirements.txt, instala directo:
+## 2) Cómo ejecutar
 
-pip install pillow opencv-python numpy matplotlib
+### A) Análisis completo (grises y color) con una sola orden
+```bash
+python analyze_image.py --image imgs/tu_imagen.jpg --all
+```
+Genera:
+- Carpeta `out/` con:
+  - `hist_gray.png`, `hist_gray_cdf.png`, `hist_eq_gray.png` (si aplica)
+  - `hist_R.png`, `hist_G.png`, `hist_B.png` y sus CDFs
+  - `stats_gray.json`, `stats_color.json` y `stats_*.csv`
 
+### B) Solo **escala de grises**
+```bash
+python analyze_image.py --image imgs/tu_imagen.jpg --gray
+```
 
-Guia_Laboratorio_Analisis_Image…
+### C) Solo **color (RGB por canal)**
+```bash
+python analyze_image.py --image imgs/tu_imagen.jpg --color
+```
 
-Estructura sugerida del repositorio
-.
-├─ src/
-│  └─ analisis_imagenes.py        # script principal (RGB, grises, binarización)
-├─ data/
-│  └─ imagen_ejemplo.jpg          # imagen de prueba (colócala aquí)
-├─ docs/
-│  ├─ informe_tecnico.docx        # entrega final
-│  └─ presentacion.pptx           # diapositivas
-├─ reports/figuras/               # capturas (RGB/gris/binaria/histograma)
-├─ notebooks/                     # (opcional)
-├─ README.md
-└─ requirements.txt
+### D) Demo de ecualización (grises y color)
+```bash
+python demos/ecualizacion_demo.py --image imgs/tu_imagen.jpg
+```
 
-Uso
+> Si necesitas ver los resultados en pantalla (además de guardarlos), añade `--show` en los comandos.
 
-Coloca una imagen de prueba en data/ y ajusta ruta_imagen en el script.
+---
 
-Ejecuta el script y observa cada transformación (RGB → grises → binarización).
+## 3) Estructura del proyecto
 
-Prueba distintos umbrales y agrega funciones (p. ej., HSV con OpenCV). 
+```
+practica1_histograma_proyecto/
+├── analyze_image.py           # CLI principal (color/grises)
+├── metrics.py                 # Cálculo de métricas y utilidades
+├── demos/
+│   └── ecualizacion_demo.py   # Ejemplos de ecualización (grises/HSV)
+├── imgs/                      # Coloca aquí tus imágenes
+│   └── ejemplo.jpg            # (placeholder vacío, reemplázalo por tu imagen)
+├── out/                       # Resultados: png/csv/json
+├── requirements.txt
+└── README.md
+```
 
-Practica 1-Analisis de Imágenes
+---
 
- 
+## 4) Relación con la práctica solicitada
 
-Practica 1-Analisis de Imágenes
+- **Histograma** y **propiedades estadísticas** para **color** (R,G,B) y **grises**: implementado en `metrics.py` y orquestado por `analyze_image.py`.
+- Propiedades: **energía**, **entropía**, **asimetría (skewness)**, **media**, **varianza**.
+- Extensiones sugeridas: **CDF**, **ecualización**, **exportación** (CSV/JSON) para apoyar el desarrollo posterior y la autoevaluación.
 
-Ejecutar
+---
 
-python src/analisis_imagenes.py
+## 5) Notas
 
-
-Código base (punto de partida de la práctica: lectura, separación RGB, grises, binarización) está descrito en el anexo de la práctica. 
-
-Practica 1-Analisis de Imágenes
-
-Roadmap por sesiones (issues sugeridos)
-
-S1
-
-feat: lectura de imagen y separación RGB
-
-docs: bitácora sesión 1
-
-S2
-
-feat: conversión a grises
-
-feat: binarización (umbral fijo) + (Otsu)
-
-feat: histograma de intensidad
-
-exp: comparación RGB vs HSV
-
-S3
-
-docs: informe técnico (IMRyD) + anexos
-
-chore: preparar demo y presentación
-
-release: publicar repo final
-
-Estas tareas están alineadas con los productos esperados de cada sesión. 
-
-Practica 1-Analisis de Imágenes
-
- 
-
-Practica 1-Analisis de Imágenes
-
-Guía de colaboración (Git)
-
-Flujo propuesto: ramas main (protegida), dev, feature/<tarea>.
-
-Pull Requests con:
-
-Descripción breve del cambio.
-
-Evidencias (capturas de RGB, grises, binaria, histograma en reports/figuras/).
-
-Checklist de rúbrica (ver arriba).
-
-Bitácoras de cada sesión y reparto de roles documentados (Notion/docs/), como solicita la guía. 
-
-Guia_Laboratorio_Analisis_Image…
+- Las gráficas se guardan en `out/`. Si usas `--show`, se abrirán ventanas interactivas (puede no ser deseable en servidores headless).
+- Las estadísticas se imprimen y guardan en JSON/CSV.
+- La ecualización en color se hace en el espacio **HSV** (ecualizando el canal V) como aproximación; también puedes experimentar con **YCrCb** (ecualizando **Y**).
 
 Roles del equipo (Supernovas)
 
